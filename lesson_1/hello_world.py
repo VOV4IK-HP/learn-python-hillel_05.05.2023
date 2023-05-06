@@ -11,7 +11,7 @@ print(x)
 x = 3
 print(x)
 
-name=input('Wtat is your name?')
+name=input('Whtat is your name?')
 print('Hello? name')
 print('Hello, ', name)
 print(f'Hello, {name}')
