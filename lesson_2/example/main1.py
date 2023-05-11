@@ -1,7 +1,7 @@
 from math import sqrt
-a = int(input("Type your first number here ->> "))
-b = int(input("Type your second number here ->> "))
-c = int(input("Type your third number here ->> "))
+a = float(input("Type your first number here ->> "))
+b = float(input("Type your second number here ->> "))
+c = float(input("Type your third number here ->> "))
 
 d = b ** 2 - 4 * a * c
 print(d)
