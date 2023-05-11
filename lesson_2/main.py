@@ -1,4 +1,6 @@
-a = 5     # int (integer) тип данных цельночисловые
+# int (integer) тип данных цельночисловые
+
+a = 5
 b = a + 3
 print(b)
 
@@ -21,9 +23,11 @@ print(a // b)
 print('Возведение в степень: ')
 print(a ** b)
 
+# c = bool
+
 a = 5
 b = 8
-c = b == a + 3  # c = bool
+c = b == a + 3
 print(c)
 first = True
 second = False
@@ -60,3 +64,4 @@ print(4 > 2)
 print(4 > 2)
 print(4 >= 2)
 print(4 <= 2)
+
