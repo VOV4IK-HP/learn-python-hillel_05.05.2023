@@ -1,5 +1,4 @@
 # Литералы - это любые знаечения, не записанные в переменные. Наример: 5, -1, 1000, 5.3, "Hello World!"
-
 print(5)
 
 print('Hello World!')
@@ -11,8 +10,8 @@ print(x)
 x = 3
 print(x)
 
-name=input('Whtat is your name?')
-print('Hello? name')
+name = input('What is your name?')
+print('Hello, name')
 print('Hello, ', name)
 print(f'Hello, {name}')
 print(f"Hello, {name}")
