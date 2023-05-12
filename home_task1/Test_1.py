@@ -20,6 +20,7 @@ x = 5 / 2
 print(type(x))
 
 import math
+
 print(round(math.pi, 2))  # число Пи - 3.141592653589793
 
 print(int(3.9))
