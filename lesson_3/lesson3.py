@@ -54,4 +54,3 @@ for letter in st:
 a = 7
 my_string = f"Нас в группе {a} человек"
 print(my_string)
-
