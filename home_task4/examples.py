@@ -158,14 +158,53 @@
 #print(name)
 
 # task 22
-firstname = input("Enter your first name in lowercase: ")
-surname = input("Enter your surname in lowercase: ")
-firstname = firstname.title()
-surname = surname.title()
-name = firstname + " " + surname
-print(name)
+#firstname = input("Enter your first name in lowercase: ")
+#surname = input("Enter your surname in lowercase: ")
+#firstname = firstname.title()
+#surname = surname.title()
+#name = firstname + " " + surname
+#print(name)
 
+#
+'''EXIT_COMMAND = 'n'
+num1 = float(input("Enter a number: "))
+total = num1
+again = "y"
+while again == "y":
+ num2 = float(input("Enter another number: "))
+ total = total + num2
+ again = input("Do you want to add another number? (y/n) ")
+print("The total is ",total)'''
 
+# program to calculate the sum of numbers
+# until the user enters zero
 
+"""total = 0
+number = float(input('Enter your number:> '))
+# add numbers until number is zero
+while number != 0:
+    total += number  # total = total + number
+    # take integer input again
+    number = float(input('Enter another number:> '))
+print('=' * 20)
+print('Your total:>', total)"""
 
+'''BREAK_COMMAND = 0
+total = 0 # общая сумма
+while True: # бесконечный цикл
+    x = float(input('Insert your number:\n-> ')) # каждая строка содержит число
+    if x == 0: # нашли ноль
+        break  # выходим из цикла
+    total += x # суммируем
+print(('Your total:'), total) # печатаем результат'''
 
+sum1 = 0
+while True:
+    value = input('Enter your number:\n> ')
+    if value.isdigit(): # проверка строки на число
+        sum1 += int(value) # здесь его уже переводим
+    if value == "sum":
+        print('Your total:', sum1)
+    elif value == 'exit' or value == 'quit':
+        break
+print('Completed')
