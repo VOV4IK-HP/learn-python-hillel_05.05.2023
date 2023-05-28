@@ -21,7 +21,6 @@ while True:
         print('3. Already exited')
     print("4. Последний вывод в теле цикла")
 
-
 print('Outside break-while!')
 
 while True:
