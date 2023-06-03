@@ -1,4 +1,4 @@
-# def <имя функции>(<параметр функции 1>, <параметр функции 2>, ...):
+# Программа рассчитывает количество использования електроенергии и ее стоимость:
 def read_user_number(user_prompt, lower_bound=0, upper_bound=9999999):
     """
     Отвечает за считывание у пользователя строки и конвертации её в число
@@ -10,7 +10,7 @@ def read_user_number(user_prompt, lower_bound=0, upper_bound=9999999):
     """
     # тело функции на отступе
     while True:
-        number = input(f'{user_prompt}\n>')
+        number = input(f'{user_prompt}\n> ')
         try:
             number = float(number)
             if lower_bound < number < upper_bound:
@@ -22,10 +22,19 @@ def read_user_number(user_prompt, lower_bound=0, upper_bound=9999999):
         except Exception:
             print(f'Не удалось получить число из ввода: "{number}", повторите пожалуйста попытку')
 
+
 print(type(read_user_number), read_user_number)
-a = read_user_number('Введите предыдущие показания счетчика')
-fuel_liter_price = read_user_number('Введите текущие показания счетчика')
-age = read_user_number('Введите тариф')
+old_data = read_user_number('Введите предыдущие показания счетчика, кВт')
+new_data = read_user_number('Введите текущие показания счетчика, , кВт')
+price = read_user_number('Введите тариф, грн/кВт')
 
+# Использовано кВт, грн.:
+used = new_data - old_data
 
-print(a, fuel_liter_price, age)
+# Нужно оплатить, грн.:
+coast = used * price
+
+print('Использовано, кВт.:')
+print(float(used))
+print('Нужно оплатить, грн.:')
+print(float(coast))
