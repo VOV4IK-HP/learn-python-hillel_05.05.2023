@@ -1,10 +1,11 @@
-# Перевод секунд в формат чч.мм.сс
-
+# Функция переводит введенное число секунд в формат чч.мм.сс
 s = int(input("Введите количество секунд:\n> "))
 seconds = s
 
 
+# прописываем правила рекалькуляции в часы, минуты, секунды
 def convert(seconds):
+    seconds = s
     seconds %= 24 * 3600
     hours = seconds // 3600
     seconds %= 3600
@@ -14,4 +15,7 @@ def convert(seconds):
     print(f'{hours}:{minutes}:{seconds}')
 
 
-convert(seconds)
+# выводим конвертируемые данные (секунды)
+if __name__ == '__main__':
+    qty_seconds = seconds
+    convert(qty_seconds)
