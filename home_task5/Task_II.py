@@ -25,7 +25,7 @@ def remove_text(string):
             break
 
         # Удаляем все лишнее :)
-        string = string[:open_index] + string[close_index+1:]
+        string = string[:open_index] + string[close_index + 1:]
     return string
 
 
