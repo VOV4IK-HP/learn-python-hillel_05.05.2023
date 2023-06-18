@@ -37,7 +37,7 @@ def shortest_names():
 # Функция выводит "меню" варианты работы с программой, завершение программы:
 def main():
     again = "y"
-    while again == "y":
+    while again == "y": # в случае ввода правильного варианта выводится запрошенное действие и меню
         print("1) Add a notes")
         print("2) Earliest a notes")
         print("3) Latest a notes")
@@ -58,7 +58,7 @@ def main():
         elif selection == 6:
             again = "n"
         else:
-            print("Incorrect option: ")
+            print("Incorrect option: ") # в случае ввода не правильного варианта выводится фраза и меню
 
 
 if __name__ == '__main__':
