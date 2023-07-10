@@ -1,119 +1,104 @@
 import csv
+import random
 
 
-def read_inventory(file):
-    with open(file, 'r') as f:
-        reader = csv.DictReader(f)
-        inventory = []
+def read_csv(file):
+    data = []
+    with open(file, 'r') as csv_file:
+        reader = csv.DictReader(csv_file)
         for row in reader:
-            inventory.append(row)
-    return inventory
+            data.append(row)
+    return data
 
 
-def generate_id(inventory):
+def generate_id():
+    return random.randint(1, 1000)
+
+
+def create_id_index(data):
     id_index = {}
-    for i, item in enumerate(inventory):
-        item['id'] = i + 1
-        id_index[i + 1] = item
+    for item in data:
+        item_id = generate_id()
+        item['id'] = item_id
+        id_index[item_id] = item
     return id_index
 
 
-def generate_category_index(inventory):
+def create_category_index(data):
     category_index = {}
-    for item in inventory:
-        category = item['категория']
-        id = item['id']
+    for item in data:
+        category = item['category']
         if category not in category_index:
             category_index[category] = []
-        category_index[category].append(id)
+        category_index[category].append(item['id'])
     return category_index
 
 
-def generate_brand_index(inventory):
+def create_brand_index(data):
     brand_index = {}
-    for item in inventory:
-        brand = item['марка']
-        id = item['id']
+    for item in data:
+        brand = item['brand']
         if brand not in brand_index:
             brand_index[brand] = []
-        brand_index[brand].append(id)
+        brand_index[brand].append(item['id'])
     return brand_index
 
 
-def print_brand_stats(inventory):
-    brand_stats = {}
-    for item in inventory:
-        brand = item['марка']
-        if brand not in brand_stats:
-            brand_stats[brand] = 0
-        brand_stats[brand] += 1
-    print("Статистика товаров по брендам:")
-    for brand, count in brand_stats.items():
-        print(f"{brand}: {count}")
+def print_brand_stats(brand_index):
+    for brand, ids in brand_index.items():
+        print(f"{brand}: {len(ids)} товаров")
 
 
-def print_category_stats(inventory):
-    category_stats = {}
-    for item in inventory:
-        category = item['категория']
-        if category not in category_stats:
-            category_stats[category] = 0
-        category_stats[category] += 1
-    print("Статистика товаров по категориям:")
-    for category, count in category_stats.items():
-        print(f"{category}: {count}")
+def print_category_stats(category_index):
+    for category, ids in category_index.items():
+        print(f"{category}: {len(ids)} товаров")
 
 
-def print_items_by_brand_and_category(inventory, brand, category):
-    print(f"Товары бренда {brand} и категории {category}:")
-    for item in inventory:
-        if item['марка'] == brand and item['категория'] == category:
-            print(item)
+def print_items_by_brand_and_category(data, brand, category):
+    items = [item for item in data if item['brand'] == brand and item['category'] == category]
+    for item in items:
+        print(f"Товар #{item['id']}:")
+        print(f"Модель: {item['модель']}")
+        print(f"Категория: {item['category']}")
+        print(f"Бренд: {item['brand']}")
+        print(f"Цена: {item['price']}")
+        print()
 
 
-def calculate_brand_distribution(inventory):
+def print_brand_distribution_by_category(data):
     brand_distribution = {}
-    for item in inventory:
-        category = item['категория']
-        brand = item['марка']
+    for item in data:
+        category = item['category']
+        brand = item['brand']
         if category not in brand_distribution:
             brand_distribution[category] = {}
         if brand not in brand_distribution[category]:
             brand_distribution[category][brand] = 0
         brand_distribution[category][brand] += 1
-    return brand_distribution
 
-
-def print_brand_distribution(brand_distribution):
-    print("Распределение товаров по брендам для каждой категории:")
     for category, brands in brand_distribution.items():
         print(f"Категория: {category}")
         for brand, count in brands.items():
-            print(f"{brand}: {count} товаров")
+            print(f"{count} товаров от {brand}")
         print()
 
 
-# Чтение файла
-inventory = read_inventory('tech_inventory.csv')
+data = read_csv('tech_inventory.csv')
+id_index = create_id_index(data)
+category_index = create_category_index(data)
+brand_index = create_brand_index(data)
 
-# Генерация уникальных айди
-id_index = generate_id(inventory)
+print("Статистика по брендам:")
+print_brand_stats(brand_index)
+print()
 
-# Генерация индекса по категориям
-category_index = generate_category_index(inventory)
+print("Статистика по категориям:")
+print_category_stats(category_index)
+print()
 
-# Генерация индекса по брендам
-brand_index = generate_brand_index(inventory)
+print("Товары выбранного бренда и категории:")
+print_items_by_brand_and_category(data, 'Apple', 'Смартфоны')
+print()
 
-# Вывод статистики по брендам и категориям
-print_brand_stats(inventory)
-print_category_stats(inventory)
-
-# Вывод списка товаров выбранного бренда и категории
-selected_brand = "Lenovo"
-selected_category = "Ноутбуки"
-print_items_by_brand_and_category(inventory, selected_brand, selected_category)
-
-# Расчет и вывод распределения товаров по брендам для каждой категории
-brand_distribution = calculate_brand_distribution(inventory)
-print_brand_distribution(brand_distribution)
+print("Распределение товаров по брендам для каждой категории:")
+print_brand_distribution_by_category(data)
