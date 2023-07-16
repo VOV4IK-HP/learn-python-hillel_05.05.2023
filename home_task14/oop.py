@@ -32,7 +32,7 @@ class Metrics:
         self.disposed_products_per_warehouse = {}  # количество утилизированных товаров по каждому составу (warehouse)
 
     def read_data(self):
-        directory = '/home_task14/SKU'  # путь к директории с файлами
+        directory = '/home_task14/SKU/'  # путь к директории с файлами
         for filename in os.listdir(directory):
             if filename.endswith(".csv"):
                 filepath = os.path.join(directory, filename)
@@ -113,16 +113,16 @@ class Metrics:
                     else:
                         self.disposed_products_per_warehouse[event.warehouse] = 1
 
-                # Создаем объект класса Metrics
-                metrics = Metrics()
+        # Создаем объект класса Metrics
+        metrics = Metrics()
 
-                # Чтение данных и вычисление метрик
-                metrics.read_data()
-                metrics.calculate_metrics()
+        # Чтение данных и вычисление метрик
+        metrics.read_data()
+        metrics.calculate_metrics()
 
-                # Вывод результатов
-                print("Прибыль от всех операций типа sale:", metrics.profit)
-                print("Количество уникальных SKU, которые были потеряны:", len(metrics.lost_skus))
-                print("Количество товаров в каждом составе (warehouse):", metrics.total_products_per_warehouse)
-                print("Количество утилизированных товаров по каждому составу (warehouse):",
-                      metrics.disposed_products_per_warehouse)
+        # Вывод результатов
+        print("Прибыль от всех операций типа sale:", metrics.profit)
+        print("Количество уникальных SKU, которые были потеряны:", len(metrics.lost_skus))
+        print("Количество товаров в каждом составе (warehouse):", metrics.total_products_per_warehouse)
+        print("Количество утилизированных товаров по каждому составу (warehouse):",
+              metrics.disposed_products_per_warehouse)
