@@ -1,13 +1,12 @@
-import os
 import csv
 import json
-from datetime import datetime
+import os
 
 
-# Класс для представления события
+# Создаем класс для представления события
 class Event:
-    def init(self, date, time, sku, warehouse, warehouse_cell_id, operation, invoice, expiration_date, operation_cost,
-             comment):
+    def __init__(self, date, time, sku, warehouse, warehouse_cell_id, operation, invoice, expiration_date,
+                 operation_cost, comment):
         self.date = date
         self.time = time
         self.sku = sku
@@ -20,151 +19,110 @@ class Event:
         self.comment = comment
 
 
-# Класс для чтения данных из файлов и определения их типа
-class FileReader:
-    def init(self, directory):
-        self.directory = directory
+# Создаем класс для хранения всех событий и выполнения метрик
+class Metrics:
+    def __init__(self):
+        self.events = []  # список для хранения всех событий
+        self.index_sku = {}  # индекс по колонке sku
+        self.index_warehouse = {}  # индекс по колонке warehouse
+        self.index_operation = {}  # индекс по колонке operation
+        self.profit = 0  # прибыль от всех операций типа sale
+        self.lost_skus = set()  # уникальные SKU, которые были потеряны
+        self.total_products_per_warehouse = {}  # количество товаров в каждом составе (warehouse)
+        self.disposed_products_per_warehouse = {}  # количество утилизированных товаров по каждому составу (warehouse)
 
-    def read_files(self):
-        events = []
-        for filename in os.listdir(self.directory):
-            filepath = os.path.join(self.directory, filename)
+    def read_data(self):
+        directory = '/home_task14/SKU'  # путь к директории с файлами
+        for filename in os.listdir(directory):
             if filename.endswith(".csv"):
-                events += self.read_csv(filepath)
+                filepath = os.path.join(directory, filename)
+                self.read_csv(filepath)
             elif filename.endswith(".json"):
-                events += self.read_json(filepath)
-        return events
+                filepath = os.path.join(directory, filename)
+                self.read_json(filepath)
 
+    # Чтение данных из CSV файла
     def read_csv(self, filepath):
-        events = []
-        with open(filepath, "r") as file:
+        with open(filepath, 'r') as file:
             reader = csv.reader(file)
+            next(reader)  # пропускаем заголовок
             for row in reader:
-                event = Event(*row)
-                events.append(event)
-        return events
+                event = Event(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8], row[9])
+                self.events.append(event)
+                self.update_indexes(event)
 
+    # Чтение данных из JSON файла
     def read_json(self, filepath):
-        events = []
-        with open(filepath, "r") as file:
+        with open(filepath, 'r') as file:
             data = json.load(file)
             for item in data:
-                event = Event(**item)
-                events.append(event)
-        return events
+                event = Event(item['date'],
+                              item['time'],
+                              item['sku'],
+                              item['warehouse'],
+                              item['warehouse_cell_id'],
+                              item['operation'],
+                              item['invoice'],
+                              item['expiration_date'],
+                              item['operation_cost'],
+                              item['comment'])
+                self.events.append(event)
+                self.update_indexes(event)
 
+    # Обновление индексов
+    def update_indexes(self, event):
+        # Индекс по колонке sku
+        if event.sku in self.index_sku:
+            self.index_sku[event.sku].append(event)
+        else:
+            self.index_sku[event.sku] = [event]
 
-# Класс для вычисления метрик по данным
-class MetricsCalculator:
-    def init(self, events):
-        self.events = events
+        # Индекс по колонке warehouse
+        if event.warehouse in self.index_warehouse:
+            self.index_warehouse[event.warehouse].append(event)
+        else:
+            self.index_warehouse[event.warehouse] = [event]
 
-    def calculate_profit(self):
-        profit = 0
+        # Индекс по колонке operation
+        if event.operation in self.index_operation:
+            self.index_operation[event.operation].append(event)
+        else:
+            self.index_operation[event.operation] = [event]
+
+    # Вычисление метрик
+    def calculate_metrics(self):
         for event in self.events:
-            if event.operation == "sale":
-                profit += event.operation_cost
-        return profit
+            # Вычисление прибыли от всех операций типа sale
+            if event.operation == 'sale':
+                self.profit += float(event.operation_cost)
 
-    def calculate_lost_skus(self):
-        lost_skus = set()
-        for event in self.events:
-            if event.expiration_date and event.operation != "sale":
-                lost_skus.add(event.sku)
-        return len(lost_skus)
+            # Проверка, если expiration_date прошло и sale не произошло, добавляем SKU в список потерянных
+            if event.operation != 'sale' and event.expiration_date != '' and event.date > event.expiration_date:
+                self.lost_skus.add(event.sku)
 
-    def calculate_items_per_warehouse(self):
-        items_per_warehouse = {}
-        for event in self.events:
-            if event.warehouse not in items_per_warehouse:
-                items_per_warehouse[event.warehouse] = 0
-            items_per_warehouse[event.warehouse] += 1
-        return items_per_warehouse
+            # Подсчет количества товаров в каждом составе (warehouse)
+            if event.warehouse in self.total_products_per_warehouse:
+                self.total_products_per_warehouse[event.warehouse] += 1
+            else:
+                self.total_products_per_warehouse[event.warehouse] = 1
 
-    def calculate_sold_items_per_warehouse(self):
-        sold_items_per_warehouse = {}
-        for event in self.events:
-            if event.operation == "sale":
-                if event.warehouse not in sold_items_per_warehouse:
-                    sold_items_per_warehouse[event.warehouse] = 0
-                sold_items_per_warehouse[event.warehouse] += 1
-        return sold_items_per_warehouse
+                # Подсчет количества утилизированных товаров по каждому составу (warehouse)
+                if event.operation == 'dispose':
+                    if event.warehouse in self.disposed_products_per_warehouse:
+                        self.disposed_products_per_warehouse[event.warehouse] += 1
+                    else:
+                        self.disposed_products_per_warehouse[event.warehouse] = 1
 
-    def calculate_utilized_items_per_warehouse(self):
-        utilized_items_per_warehouse = {}
-        for event in self.events:
-            if event.operation == "dispose":
-                if event.warehouse not in utilized_items_per_warehouse:
-                    utilized_items_per_warehouse[event.warehouse] = 0
-                utilized_items_per_warehouse[event.warehouse] += 1
-        return utilized_items_per_warehouse
+                # Создаем объект класса Metrics
+                metrics = Metrics()
 
+                # Чтение данных и вычисление метрик
+                metrics.read_data()
+                metrics.calculate_metrics()
 
-# Класс для создания индексов
-class IndexBuilder:
-    def init(self, events):
-        self.events = events
-        self.sku_index = {}
-        self.warehouse_index = {}
-        self.operation_index = {}
-
-    def build_indexes(self):
-        for event in self.events:
-            if event.sku not in self.sku_index:
-                self.sku_index[event.sku] = []
-            self.sku_index[event.sku].append(event)
-
-            if event.warehouse not in self.warehouse_index:
-                self.warehouse_index[event.warehouse] = []
-            self.warehouse_index[event.warehouse].append(event)
-
-
-    if event.operation not in self.operation_index:
-        self.operation_index[event.operation] = []
-    self.operation_index[event.operation].append(event)
-
-
-    def get_events_by_sku(self, sku):
-        if sku in self.sku_index:
-            return self.sku_index[sku]
-        return []
-
-
-    def get_events_by_warehouse(self, warehouse):
-        if warehouse in self.warehouse_index:
-            return self.warehouse_index[warehouse]
-        return []
-
-
-    def get_events_by_operation(self, operation):
-        if operation in self.operation_index:
-            return self.operation_index[operation]
-        return []
-
-
-    # Чтение и анализ данных
-    fileReader = FileReader("path/to/directory")
-    events = fileReader.read_files()
-
-    indexBuilder = IndexBuilder(events)
-    indexBuilder.build_indexes()
-
-    metricsCalculator = MetricsCalculator(events)
-
-    profit = metricsCalculator.calculate_profit()
-    print("Total profit: $", profit)
-
-    lost_skus = metricsCalculator.calculate_lost_skus()
-    print("Number of lost SKUs:", lost_skus)
-
-    items_per_warehouse = metricsCalculator.calculate_items_per_warehouse()
-    for warehouse, count in items_per_warehouse.items():
-        print("Items in warehouse", warehouse + ":", count)
-
-    sold_items_per_warehouse = metricsCalculator.calculate_sold_items_per_warehouse()
-    for warehouse, count in sold_items_per_warehouse.items():
-        print("Sold items from warehouse", warehouse + ":", count)
-
-    utilized_items_per_warehouse = metricsCalculator.calculate_utilized_items_per_warehouse()
-    for warehouse, count in utilized_items_per_warehouse.items():
-        print("Utilized items from warehouse", warehouse + ":", count)
+                # Вывод результатов
+                print("Прибыль от всех операций типа sale:", metrics.profit)
+                print("Количество уникальных SKU, которые были потеряны:", len(metrics.lost_skus))
+                print("Количество товаров в каждом составе (warehouse):", metrics.total_products_per_warehouse)
+                print("Количество утилизированных товаров по каждому составу (warehouse):",
+                      metrics.disposed_products_per_warehouse)

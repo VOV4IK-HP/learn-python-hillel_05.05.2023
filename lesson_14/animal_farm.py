@@ -1,4 +1,4 @@
-from animals import Dog, Hen, Cow
+from animals import Dog, Hen, Cow, Cat
 from random import choices, choice, randint
 
 if __name__ == '__main__':

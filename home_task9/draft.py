@@ -1,3 +1,5 @@
+import os
+
 # имя файла
 FILENAME = "notes.txt"
 # определяем пустой список

@@ -73,7 +73,7 @@ class Index:
 
 
 # Класс для вычисления метрик по данным
-class MetricsCalculator:
+def metricsCalculator(events, metricsCalculator=None):
     def init(self, events):
         self.events = events
 
@@ -108,9 +108,8 @@ class MetricsCalculator:
             for warehouse in warehouses}
         return utilized_items_per_warehouse
 
-
     # Чтение и анализ данных
-    fileReader = FileReader("path/to/directory/SKU")
+    fileReader = FileReader("home_task14\SKU")
     events = fileReader.read_files()
 
     index_sku = Index(events, "sku")
@@ -135,5 +134,3 @@ class MetricsCalculator:
     utilized_items_per_warehouse = metricsCalculator.calculate_utilized_items_per_warehouse()
     for warehouse, count in utilized_items_per_warehouse.items():
         print("Utilized items from warehouse", warehouse + ":", count)
-
-
